@@ -7,24 +7,45 @@
 <style>
 body{margin:0;font-family:Arial;background:#FFF3D6;text-align:center}
 .header{background:#FF4D2E;color:white;padding:15px;font-size:22px;font-weight:bold}
-.mascotte{font-size:100px;animation:salta 1s infinite alternate}
-@keyframes salta{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.mascotte{font-size:90px}
 .fumetto{background:white;border:3px solid #222;border-radius:20px;padding:12px;margin:10px 20px;font-size:18px}
 .card{background:white;margin:12px;border-radius:16px;padding:15px;text-align:left}
 .card h3{text-align:center;margin:0 0 10px 0}
 .riga{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed #ddd}
-.prezzo{font-weight:bold;color:#FF4D2E;font-size:18px;white-space:nowrap;margin:0 8px}
-button{background:#FF4D2E;color:white;border:none;padding:8px 12px;border-radius:10px;font-size:13px;white-space:nowrap}
-.punti{font-size:26px;font-weight:bold;color:#FF4D2E;text-align:center}
+.prezzo{font-weight:bold;color:#FF4D2E;font-size:18px}
+button{background:#FF4D2E;color:white;border:none;padding:12px 16px;border-radius:10px;font-size:15px;width:100%;margin-top:10px}
+select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;font-size:16px;margin-top:10px;box-sizing:border-box}
+.punti{font-size:30px;font-weight:bold;color:#FF4D2E;text-align:center}
 .barra{height:18px;background:#eee;border-radius:10px;overflow:hidden;margin:10px 0}
 .progresso{height:100%;width:0%;background:#FFB800}
 .speciale{background:#FFF0B3;border:2px solid #FFB800}
+#anteprima{width:100%;border-radius:12px;margin-top:10px;display:none}
+/* SPEAKER MCDONALD - SENZA VOCE */
+.palo{width:20px;height:30px;background:#666;margin:0 auto}
+.speaker-box{background:#333;color:white;padding:15px;border-radius:20px;margin:12px;border:5px solid #666}
+.schermo{background:#111;color:#0f0;padding:14px;border-radius:10px;font-family:monospace;font-size:16px;min-height:70px;margin:10px 0;text-align:left}
+.btn-speaker{background:#FFB800;color:#222;font-weight:bold;font-size:16px;padding:14px}
+.btn-speaker:active{background:#fff}
 </style>
 </head>
 <body>
 <div class="header">🦉 BURBY - Panini & Hot Dog Trailer</div>
 <div class="mascotte">🦉🌭</div>
-<div class="fumetto">Ciao, sono Burby! Guarda il menù qui sotto 😉</div>
+<div class="fumetto">Ordina allo speaker come al McDonald's, premi un bottone 👇</div>
+
+<div class="palo"></div>
+<div class="speaker-box">
+<h3 style="margin:0">🔊 BURBY DRIVE - SPEAKER</h3>
+<p style="font-size:13px;margin:5px 0;color:#ccc">Premi per ordinare - senza parlare</p>
+<div class="schermo" id="schermo">BURBY DRIVE<br>Benvenuto! Scegli cosa vuoi ordinare...</div>
+<button class="btn-speaker" onclick="ordina('BURBY SMALL - Panino + Bibita','5€')">SMALL - Panino + Bibita - 5€</button>
+<button class="btn-speaker" onclick="ordina('BURBY MEDIUM - Hot Dog + Birra','6€')">MEDIUM - Hot Dog + Birra - 6€</button>
+<button class="btn-speaker" onclick="ordina('SPECIAL BURBY - Hot Dog + Cocktail','8€')">SPECIAL - Hot Dog + Cocktail - 8€</button>
+<button class="btn-speaker" onclick="ordina('Panino','5€')" style="background:white">Panino - 5€</button>
+<button class="btn-speaker" onclick="ordina('Bibita 33cl','4€')" style="background:white">Bibita 33cl - 4€</button>
+<button class="btn-speaker" onclick="ordina('Birra','da 2€')" style="background:white">Birra - da 2€</button>
+<button onclick="conferma()" style="background:green">✅ CONFERMA ORDINE</button>
+</div>
 
 <div class="card">
 <h3>🎁 I TUOI PUNTI</h3>
@@ -33,29 +54,71 @@ button{background:#FF4D2E;color:white;border:none;padding:8px 12px;border-radius
 <div id="premio" style="text-align:center">Ti mancano 10 punti per l'hot dog gratis!</div>
 </div>
 
+<div class="card" style="border:3px solid #FF4D2E">
+<h3>📸 AGGIUNGI PUNTI CON FOTO</h3>
+<p style="text-align:center;margin:0">Fai foto al menù o panino, scegli cosa hai preso, punti automatici!</p>
+<input type="file" accept="image/*" capture="environment" id="foto" onchange="mostraFoto(this)">
+<img id="anteprima">
+<select id="scelta">
+<option value="0">Cosa hai preso?</option>
+<option value="1">Bibita 33cl - 1 punto</option>
+<option value="1">Birra - 1 punto</option>
+<option value="2">Panino - 2 punti</option>
+<option value="3">BURBY SMALL - 3 punti</option>
+<option value="3">BURBY MEDIUM - 3 punti</option>
+<option value="4">SPECIAL BURBY - 4 punti</option>
+</select>
+<button onclick="aggiungiFoto()">✅ CONFERMA FOTO E AGGIUNGI PUNTI</button>
+</div>
+
 <div class="card">
 <h3>🍔 SINGOLI</h3>
-<div class="riga"><span>🥪 Panino</span><span class="prezzo">5€</span><button onclick="aggiungi(2)">+2 punti</button></div>
-<div class="riga"><span>🥤 Bibita 33cl</span><span class="prezzo">4€</span><button onclick="aggiungi(1)">+1 punto</button></div>
-<div class="riga"><span>💧 Acqua</span><span class="prezzo">1€</span><button onclick="aggiungi(0)">Ordina</button></div>
-<div class="riga"><span>🍺 Birra</span><span class="prezzo">da 2€</span><button onclick="aggiungi(1)">+1 punto</button></div>
+<div class="riga"><span>🥪 Panino</span><span class="prezzo">5€</span></div>
+<div class="riga"><span>🥤 Bibita 33cl</span><span class="prezzo">4€</span></div>
+<div class="riga"><span>💧 Acqua</span><span class="prezzo">1€</span></div>
+<div class="riga"><span>🍺 Birra</span><span class="prezzo">da 2€</span></div>
 </div>
 
 <div class="card speciale">
 <h3>⭐ MENU BURBY</h3>
-<div class="riga"><span><b>BURBY SMALL</b><br><small>Panino + Bibita</small></span><span class="prezzo">5€</span><button onclick="aggiungi(3)">+3 punti</button></div>
-<div class="riga"><span><b>BURBY MEDIUM</b><br><small>Hot Dog + Birra a scelta<br>Heineken, Ichnusa, altre birre</small></span><span class="prezzo">6€</span><button onclick="aggiungi(3)">+3 punti</button></div>
-<div class="riga"><span><b>SPECIAL BURBY</b><br><small>Hot Dog + Cocktail base</small></span><span class="prezzo">8€</span><button onclick="aggiungi(4)">+4 punti</button></div>
+<div class="riga"><span><b>BURBY SMALL</b><br><small>Panino + Bibita</small></span><span class="prezzo">5€</span></div>
+<div class="riga"><span><b>BURBY MEDIUM</b><br><small>Hot Dog + Birra a scelta<br>Heineken, Ichnusa, altre birre</small></span><span class="prezzo">6€</span></div>
+<div class="riga"><span><b>SPECIAL BURBY</b><br><small>Hot Dog + Cocktail base</small></span><span class="prezzo">8€</span></div>
 </div>
 
 <script>
-let punti=0;
-function aggiungi(p){
-punti+=p;
-document.getElementById('punti').innerText=punti;
-document.getElementById('barra').style.width=Math.min(punti*10,100)+'%';
-if(punti>=10){document.getElementById('premio').innerText='🎉 HAI VINTO UN HOT DOG GRATIS! Mostra questa schermata!';}
-else{document.getElementById('premio').innerText='Ti mancano '+(10-punti)+' punti per l\'hot dog gratis!';}
+let punti = parseInt(localStorage.getItem('burby_punti') || '0');
+let ordineCorrente = "";
+aggiorna();
+function ordina(nome, prezzo){
+  ordineCorrente = nome + " - " + prezzo;
+  document.getElementById('schermo').innerHTML = "HAI SCELTO:<br>" + ordineCorrente + "<br><br>Premi CONFERMA per inviare!";
+}
+function conferma(){
+  if(!ordineCorrente){ alert('Scegli prima un bottone!'); return; }
+  alert("ORDINE INVIATO:\n" + ordineCorrente + "\n\nMostra questa schermata al trailer!");
+  document.getElementById('schermo').innerHTML = "ORDINE INVIATO:<br>" + ordineCorrente + "<br><br>Procedi al ritiro! Grazie!";
+}
+function mostraFoto(input){
+  if(input.files && input.files[0]){
+    let r=new FileReader();
+    r.onload=function(e){ let img=document.getElementById('anteprima'); img.src=e.target.result; img.style.display='block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+function aggiungiFoto(){
+  let foto=document.getElementById('foto').files.length;
+  let p=parseInt(document.getElementById('scelta').value);
+  if(foto==0){ alert('Prima fai la foto!'); return; }
+  if(p==0){ alert('Scegli cosa hai preso!'); return; }
+  punti+=p; localStorage.setItem('burby_punti',punti); aggiorna();
+  alert("Foto ricevuta! +"+p+" punti!");
+}
+function aggiorna(){
+  document.getElementById('punti').innerText=punti;
+  document.getElementById('barra').style.width=Math.min(punti*10,100)+'%';
+  if(punti>=10){ document.getElementById('premio').innerText='🎉 HAI VINTO UN HOT DOG GRATIS!'; }
+  else{ document.getElementById('premio').innerText='Ti mancano '+(10-punti)+' punti per l\'hot dog gratis!'; }
 }
 </script>
 </body>
