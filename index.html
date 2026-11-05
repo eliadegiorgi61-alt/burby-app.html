@@ -7,57 +7,34 @@
 <style>
   body{margin:0;font-family:Arial;background:#FFF3D6;text-align:center}
   .header{background:#FF4D2E;color:white;padding:15px;font-size:22px;font-weight:bold}
-  .burby-img{width:200px;animation:salta 1s infinite alternate;cursor:pointer}
-  @keyframes salta{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-18px) rotate(3deg)}}
+  .burby-img{width:180px;animation:salta 1s infinite alternate;cursor:pointer}
+  @keyframes salta{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-15px) rotate(3deg)}}
   .fumetto{background:white;border:3px solid #222;border-radius:20px;padding:12px;margin:10px 20px;font-size:18px;display:none}
-  .card{background:white;margin:12px;border-radius:16px;padding:15px;box-shadow:0 3px 10px #00000020}
-  button{background:#FF4D2E;color:white;border:none;padding:12px 20px;border-radius:12px;font-size:16px;margin:5px}
-  .punti{font-size:26px;font-weight:bold;color:#FF4D2E}
-  .barra{height:18px;background:#eee;border-radius:10px;overflow:hidden;margin:10px 20px}
+  .card{background:white;margin:12px;border-radius:16px;padding:15px;box-shadow:0 3px 10px #00000020;text-align:left}
+  .card h3{text-align:center}
+  .riga{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #ddd}
+  .prezzo{font-weight:bold;color:#FF4D2E;font-size:18px}
+  button{background:#FF4D2E;color:white;border:none;padding:8px 14px;border-radius:10px;font-size:14px}
+  .punti{font-size:26px;font-weight:bold;color:#FF4D2E;text-align:center}
+  .barra{height:18px;background:#eee;border-radius:10px;overflow:hidden;margin:10px 0}
   .progresso{height:100%;width:0%;background:#FFB800;transition:0.5s}
+  .badge{background:#FFB800;padding:3px 8px;border-radius:20px;font-size:12px;font-weight:bold}
+  .menu-speciale{background:#FFF0B3;border:2px solid #FFB800}
 </style>
 </head>
 <body>
   <div class="header">🦉 BURBY - Panini & Hot Dog Trailer</div>
 
   <img src="burby.png" class="burby-img" onclick="parla()" alt="Burby il Gufo">
-  <div id="fumetto" class="fumetto">Ciao, sono Burby siete ufficialmente nella mia app 😉</div>
+  <div id="fumetto" class="fumetto">Ciao, sono Burby! Guarda il menù e scegli il tuo preferito 😉</div>
   <p>Clicca sul gufo per farlo parlare!</p>
 
   <div class="card">
-    <div>🎁 I TUOI PUNTI</div>
+    <h3>🎁 I TUOI PUNTI</h3>
     <div class="punti"><span id="punti">0</span> / 10 punti</div>
     <div class="barra"><div id="barra" class="progresso"></div></div>
-    <div id="premio">Ti mancano 10 punti per l'hot dog gratis!</div>
+    <div id="premio" style="text-align:center">Ti mancano 10 punti per l'hot dog gratis!</div>
   </div>
 
   <div class="card">
-    <h3>🍔 MENU</h3>
-    <p>Panino Classico - 5€</p>
-    <button onclick="aggiungi(2)">Ordina Panino +2 punti</button><br>
-    <p>Hot Dog Burby - 4€</p>
-    <button onclick="aggiungi(2)">Ordina Hot Dog +2 punti</button><br>
-    <p>Drink - 3€</p>
-    <button onclick="aggiungi(0)">Ordina Drink</button>
-  </div>
-
-<script>
-  let punti = 0;
-  function parla(){
-    let f = document.getElementById('fumetto');
-    f.style.display = 'block';
-  }
-  setTimeout(parla, 800);
-  function aggiungi(p){
-    punti += p;
-    document.getElementById('punti').innerText = punti;
-    document.getElementById('barra').style.width = Math.min(punti*10,100) + '%';
-    if(punti >= 10){
-      document.getElementById('premio').innerText = '🎉 HAI VINTO UN HOT DOG GRATIS! Mostra questa schermata al trailer!';
-    } else {
-      document.getElementById('premio').innerText = 'Ti mancano ' + (10-punti) + ' punti per l\'hot dog gratis!';
-    }
-  }
-</script>
-</body>
-</html>
+    <h3>
