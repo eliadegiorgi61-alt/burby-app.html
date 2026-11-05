@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Burby App - Panini & Hot Dog Trailer</title>
+<style>
+  body{margin:0;font-family:Arial;background:#FFF3D6;text-align:center}
+  .header{background:#FF4D2E;color:white;padding:15px;font-size:22px;font-weight:bold}
+  .burby{font-size:110px;display:inline-block;animation:salta 1s infinite alternate, saluta 2s infinite}
+  @keyframes salta{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-20px) rotate(5deg)}}
+  @keyframes saluta{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .fumetto{background:white;border:3px solid #222;border-radius:20px;padding:12px;margin:10px 20px;font-size:18px;display:none}
+  .card{background:white;margin:12px;border-radius:16px;padding:15px;box-shadow:0 3px 10px #00000020}
+  button{background:#FF4D2E;color:white;border:none;padding:12px 20px;border-radius:12px;font-size:16px;margin:5px}
+  .punti{font-size:26px;font-weight:bold;color:#FF4D2E}
+  .barra{height:18px;background:#eee;border-radius:10px;overflow:hidden;margin:10px 20px}
+  .progresso{height:100%;width:0%;background:#FFB800;transition:0.5s}
+</style>
+</head>
+<body>
+  <div class="header">🌭 BURBY - Panini & Hot Dog Trailer</div>
+
+  <div class="burby" onclick="parla()">🌭</div>
+  <div id="fumetto" class="fumetto">Ciao, sono Burby siete ufficialmente nella mia app 😉</div>
+  <p>Clicca su Burby per farlo parlare!</p>
+
+  <div class="card">
+    <div>🎁 I TUOI PUNTI</div>
+    <div class="punti"><span id="punti">0</span> / 10 punti</div>
+    <div class="barra"><div id="barra" class="progresso"></div></div>
+    <div id="premio">Ti mancano 10 punti per l'hot dog gratis!</div>
+  </div>
+
+  <div class="card">
+    <h3>🍔 MENU</h3>
+    <p>Panino Classico - 5€</p>
+    <button onclick="aggiungi(2)">Ordina Panino +2 punti</button><br>
+    <p>Hot Dog Burby - 4€</p>
+    <button onclick="aggiungi(2)">Ordina Hot Dog +2 punti</button><br>
+    <p>Drink - 3€</p>
+    <button onclick="aggiungi(0)">Ordina Drink</button>
+  </div>
+
+<script>
+  let punti = 0;
+  function parla(){
+    let f = document.getElementById('fumetto');
+    f.style.display = 'block';
+    // fa saltare Burby più forte
+    document.querySelector('.burby').style.animationDuration = '0.3s';
+    setTimeout(()=>{ document.querySelector('.burby').style.animationDuration = '1s'; }, 1000);
+  }
+  // Mostra subito il fumetto all'apertura
+  setTimeout(parla, 800);
+
+  function aggiungi(p){
+    punti += p;
+    document.getElementById('punti').innerText = punti;
+    document.getElementById('barra').style.width = Math.min(punti*10,100) + '%';
+    if(punti >= 10){
+      document.getElementById('premio').innerText = '🎉 HAI VINTO UN HOT DOG GRATIS! Mostra questa schermata al trailer!';
+      document.getElementById('premio').style.color = 'green';
+    } else {
+      document.getElementById('premio').innerText = 'Ti mancano ' + (10-punti) + ' punti per l\'hot dog gratis!';
+    }
+  }
+</script>
+</body>
+</html>
