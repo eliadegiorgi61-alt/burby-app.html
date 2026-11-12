@@ -24,10 +24,11 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 .speaker-box{background:#333;color:white;padding:15px;border-radius:20px;margin:12px;border:5px solid #666}
 .schermo{background:#111;color:#0f0;padding:14px;border-radius:10px;font-family:monospace;font-size:16px;min-height:70px;margin:10px 0;text-align:left}
 .btn-speaker{background:#FFB800;color:#222;font-weight:bold;font-size:16px;padding:14px}
+.staff{background:#222;color:white;padding:15px;border-radius:16px;margin:12px;display:none}
 </style>
 </head>
 <body>
-<div class="header">🦉 BURBY - Panini & Hot Dog Trailer</div>
+<div class="header" onclick="apriStaff()">🦉 BURBY - Panini & Hot Dog Trailer</div>
 <div class="mascotte">🦉🌭</div>
 <div class="fumetto">Ordina allo speaker come al McDonald's, premi un bottone 👇</div>
 <div class="palo"></div>
@@ -43,17 +44,17 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 <button class="btn-speaker" onclick="ordina('Birra','da 2€')" style="background:white">Birra - da 2€</button>
 <button onclick="conferma()" style="background:green">✅ CONFERMA ORDINE</button>
 </div>
+
 <div class="card">
 <h3>🎁 I TUOI PUNTI</h3>
 <div class="punti"><span id="punti">0</span> / 10 punti</div>
 <div class="barra"><div id="barra" class="progresso"></div></div>
 <div id="premio" style="text-align:center">Ti mancano 10 punti per l'hot dog gratis!</div>
 </div>
+
 <div class="card" style="border:3px solid #FF4D2E">
-<h3>📸 AGGIUNGI PUNTI CON FOTO</h3>
-<p style="text-align:center;margin:0">Fai foto al menù o panino, scegli cosa hai preso, punti automatici!<br><b>Usa Safari, non WhatsApp!</b></p>
-<input type="file" accept="image/*" id="foto" onchange="mostraFoto(this)">
-<img id="anteprima">
+<h3>🔒 AGGIUNGI PUNTI - VERIFICATO</h3>
+<p style="text-align:center;margin:0">Scegli cosa hai preso, poi metti il <b>codice</b> che ti dà Burby al trailer. Senza codice i punti non si aggiungono!</p>
 <select id="scelta">
 <option value="0">Cosa hai preso?</option>
 <option value="1">Bibita 33cl - 1 punto</option>
@@ -63,8 +64,13 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 <option value="3">BURBY MEDIUM - 3 punti</option>
 <option value="4">SPECIAL BURBY - 4 punti</option>
 </select>
-<button onclick="aggiungiFoto()">✅ CONFERMA FOTO E AGGIUNGI PUNTI</button>
+<input type="text" id="codice" placeholder="Inserisci codice di verifica (es. BURBY123)" style="text-transform:uppercase">
+<p style="text-align:center;font-size:13px;margin-bottom:0">Foto facoltativa dello scontrino / panino:</p>
+<input type="file" accept="image/*" id="foto" onchange="mostraFoto(this)">
+<img id="anteprima">
+<button onclick="aggiungiFoto()">✅ VERIFICA E AGGIUNGI PUNTI</button>
 </div>
+
 <div class="card">
 <h3>🍔 SINGOLI</h3>
 <div class="riga"><span>🥪 Panino</span><span class="prezzo">5€</span></div>
@@ -72,21 +78,37 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 <div class="riga"><span>💧 Acqua</span><span class="prezzo">1€</span></div>
 <div class="riga"><span>🍺 Birra</span><span class="prezzo">da 2€</span></div>
 </div>
+
 <div class="card speciale">
 <h3>⭐ MENU BURBY</h3>
 <div class="riga"><span><b>BURBY SMALL</b><br><small>Panino + Bibita</small></span><span class="prezzo">5€</span></div>
 <div class="riga"><span><b>BURBY MEDIUM</b><br><small>Hot Dog + Birra a scelta<br>Heineken, Ichnusa, altre birre</small></span><span class="prezzo">6€</span></div>
 <div class="riga"><span><b>SPECIAL BURBY</b><br><small>Hot Dog + Cocktail base</small></span><span class="prezzo">8€</span></div>
 </div>
+
+<div class="staff" id="staffBox">
+<h3>👨‍🍳 AREA STAFF - SOLO TU</h3>
+<p>Inserisci il tuo PIN per generare un codice:</p>
+<input type="password" id="pin" placeholder="PIN staff">
+<button onclick="generaCodice()" style="background:#FFB800;color:#222">GENERA NUOVO CODICE</button>
+<div id="codiceGenerato" style="background:white;color:#222;padding:12px;border-radius:10px;margin-top:10px;display:none;font-size:22px;font-weight:bold;text-align:center"></div>
+<button onclick="resetPremio()" style="background:red">AZZERA PUNTI DOPO PREMIO GRATIS</button>
+<button onclick="chiudiStaff()" style="background:#555">CHIUDI</button>
+</div>
+
 <script>
 let punti = parseInt(localStorage.getItem('burby_punti') || '0');
 let ordineCorrente = "";
+let codiciUsati = JSON.parse(localStorage.getItem('burby_usati') || '[]');
+let codiciValidi = JSON.parse(localStorage.getItem('burby_validi') || '[]');
 aggiorna();
 function ordina(nome, prezzo){ ordineCorrente = nome + " - " + prezzo; document.getElementById('schermo').innerHTML = "HAI SCELTO:<br>" + ordineCorrente + "<br><br>Premi CONFERMA per inviare!"; }
 function conferma(){ if(!ordineCorrente){ alert('Scegli prima un bottone!'); return; } alert("ORDINE INVIATO:\n" + ordineCorrente + "\n\nMostra questa schermata al trailer!"); document.getElementById('schermo').innerHTML = "ORDINE INVIATO:<br>" + ordineCorrente + "<br><br>Procedi al ritiro! Grazie!"; }
 function mostraFoto(input){ if(input.files && input.files[0]){ let r=new FileReader(); r.onload=function(e){ let img=document.getElementById('anteprima'); img.src=e.target.result; img.style.display='block'; }; r.readAsDataURL(input.files[0]); } }
-function aggiungiFoto(){ let foto=document.getElementById('foto').files.length; let p=parseInt(document.getElementById('scelta').value); if(foto==0){ alert('Prima fai la foto!'); return; } if(p==0){ alert('Scegli cosa hai preso!'); return; } punti+=p; localStorage.setItem('burby_punti',punti); aggiorna(); alert("Foto ricevuta! +"+p+" punti!"); }
-function aggiorna(){ document.getElementById('punti').innerText=punti; document.getElementById('barra').style.width=Math.min(punti*10,100)+'%'; if(punti>=10){ document.getElementById('premio').innerText='🎉 HAI VINTO UN HOT DOG GRATIS!'; } else{ document.getElementById('premio').innerText='Ti mancano '+(10-punti)+' punti per l\'hot dog gratis!'; } }
-</script>
-</body>
-</html>
+function aggiungiFoto(){
+  let p=parseInt(document.getElementById('scelta').value);
+  let codice=document.getElementById('codice').value.trim().toUpperCase();
+  if(p==0){ alert('Scegli cosa hai preso!'); return; }
+  if(!codice){ alert('Devi inserire il codice che ti ha dato Burby! Senza codice non si aggiungono punti.'); return; }
+  if(codiciUsati.includes(codice)){ alert('Questo codice è già stato usato! Chiedine uno nuovo a Burby.'); return; }
+  if(!codiciValidi.includes(codice)){ alert('Codice sbagliato! Chiedi il codice giusto a Burby al trailer.'); return
