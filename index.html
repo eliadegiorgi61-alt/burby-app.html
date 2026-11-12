@@ -19,7 +19,6 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 .barra{height:18px;background:#eee;border-radius:10px;overflow:hidden;margin:10px 0}
 .progresso{height:100%;width:0%;background:#FFB800}
 .speciale{background:#FFF0B3;border:2px solid #FFB800}
-#anteprima{width:100%;border-radius:12px;margin-top:10px;display:none}
 .palo{width:20px;height:30px;background:#666;margin:0 auto}
 .speaker-box{background:#333;color:white;padding:15px;border-radius:20px;margin:12px;border:5px solid #666}
 .schermo{background:#111;color:#0f0;padding:14px;border-radius:10px;font-family:monospace;font-size:16px;min-height:70px;margin:10px 0;text-align:left}
@@ -65,10 +64,7 @@ select,input{width:100%;padding:12px;border-radius:10px;border:2px solid #ddd;fo
 <option value="4">SPECIAL BURBY - 4 punti</option>
 </select>
 <input type="text" id="codice" placeholder="Inserisci codice di verifica (es. BURBY123)" style="text-transform:uppercase">
-<p style="text-align:center;font-size:13px;margin-bottom:0">Foto facoltativa dello scontrino / panino:</p>
-<input type="file" accept="image/*" id="foto" onchange="mostraFoto(this)">
-<img id="anteprima">
-<button onclick="aggiungiFoto()">✅ VERIFICA E AGGIUNGI PUNTI</button>
+<button onclick="aggiungiPunti()">✅ VERIFICA E AGGIUNGI PUNTI</button>
 </div>
 
 <div class="card">
@@ -104,11 +100,12 @@ let codiciValidi = JSON.parse(localStorage.getItem('burby_validi') || '[]');
 aggiorna();
 function ordina(nome, prezzo){ ordineCorrente = nome + " - " + prezzo; document.getElementById('schermo').innerHTML = "HAI SCELTO:<br>" + ordineCorrente + "<br><br>Premi CONFERMA per inviare!"; }
 function conferma(){ if(!ordineCorrente){ alert('Scegli prima un bottone!'); return; } alert("ORDINE INVIATO:\n" + ordineCorrente + "\n\nMostra questa schermata al trailer!"); document.getElementById('schermo').innerHTML = "ORDINE INVIATO:<br>" + ordineCorrente + "<br><br>Procedi al ritiro! Grazie!"; }
-function mostraFoto(input){ if(input.files && input.files[0]){ let r=new FileReader(); r.onload=function(e){ let img=document.getElementById('anteprima'); img.src=e.target.result; img.style.display='block'; }; r.readAsDataURL(input.files[0]); } }
-function aggiungiFoto(){
+function aggiungiPunti(){
   let p=parseInt(document.getElementById('scelta').value);
   let codice=document.getElementById('codice').value.trim().toUpperCase();
   if(p==0){ alert('Scegli cosa hai preso!'); return; }
-  if(!codice){ alert('Devi inserire il codice che ti ha dato Burby! Senza codice non si aggiungono punti.'); return; }
+  if(!codice){ alert('Devi inserire il codice che ti ha dato Burby!'); return; }
   if(codiciUsati.includes(codice)){ alert('Questo codice è già stato usato! Chiedine uno nuovo a Burby.'); return; }
-  if(!codiciValidi.includes(codice)){ alert('Codice sbagliato! Chiedi il codice giusto a Burby al trailer.'); return
+  if(!codiciValidi.includes(codice)){ alert('Codice sbagliato! Chiedi il codice giusto a Burby al trailer.'); return; }
+  punti+=p;
+  codiciUsati.push(codice);
